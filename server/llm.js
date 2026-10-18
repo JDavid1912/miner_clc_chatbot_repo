@@ -16,12 +16,14 @@ async function gemini(system, turns, keyOverride) {
   const key = keyOverride || process.env.GEMINI_API_KEY;
   if (!key) { const e = new Error('Falta GEMINI_API_KEY'); e.code = 'missing_key'; throw e; }
 
-  // Modelos 100% gratuitos activos recomendados por Google AI Studio
+  // Modelos de Gemini (Google AI Studio) con fallback automático
   const candidateModels = [
     process.env.GEMINI_MODEL,
+    'gemini-2.5-flash',
+    'gemini-1.5-flash',
+    'gemini-2.0-flash',
     'gemini-3.8-flash',
     'gemini-3.5-flash-lite',
-    'gemini-3.6-flash',
   ].filter(Boolean);
 
   let lastError = null;
@@ -34,10 +36,15 @@ async function gemini(system, turns, keyOverride) {
         {
           systemInstruction: { parts: [{ text: system }] },
           contents: turns.map((t) => ({ role: t.role, parts: [{ text: t.text }] })),
-          generationConfig: { temperature: 0.2, topP: 0.9, maxOutputTokens: 800 },
+          generationConfig: { temperature: 0.2, topP: 0.9, maxOutputTokens: 2048 },
         },
       );
-      const text = (data.candidates?.[0]?.content?.parts || []).map((p) => p.text || '').join('').trim();
+      const cand = data.candidates?.[0];
+      const parts = cand?.content?.parts || [];
+      const text = parts.map((p) => p.text || '').join('').trim();
+      if (cand?.finishReason && cand.finishReason !== 'STOP') {
+        console.warn(`Gemini finishReason: ${cand.finishReason} en modelo ${model}`);
+      }
       if (text) return text;
     } catch (err) {
       lastError = err;
