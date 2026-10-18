@@ -44,10 +44,11 @@ const looksEnglish = (s) => {
   return count >= 1;
 };
 
-// Detecta si la consulta trata sobre temas afines a minería, ingeniería, normatividad, leyes o técnica
+// Detecta si la consulta trata sobre temas afines a minería, ingeniería, normatividad, leyes, técnica o mediciones
 const isDomainRelevant = (s) => {
   const text = norm(s);
-  return /(ley|leyes|decreto|norma|normativa|estandar|codigo|reglamento|articulo|resolucion|sg sst|mineria|minero|mina|minas|subterranea|gas|gases|metano|oxigeno|monoxido|carbono|sulfhidrico|ch4|co2|h2s|co|o2|ventilacion|ventilador|flujo|ingenieria|tecnico|tecnica|seguridad|evacuacion|sensor|alarma|sensorica|sutatausa|miner|transhumana|udec|cundinamarca|law|laws|decree|regulation|mining|mine|gas|methane|oxygen|hazard|emergency|threshold|technical)/.test(text);
+  return /(ley|leyes|decreto|norma|normativa|estandar|codigo|reglamento|articulo|resolucion|sg sst|mineria|minero|mina|minas|subterranea|gas|gases|metano|oxigeno|monoxido|carbono|sulfhidrico|ch4|co2|h2s|co|o2|ventilacion|ventilador|flujo|ingenieria|tecnico|tecnica|seguridad|evacuacion|sensor|alarma|sensorica|sutatausa|miner|transhumana|udec|cundinamarca|medicion|mediciones|medir|valor|valores|lectura|lecturas|calculo|calcular|ppm|porcentaje|cfm|temperatura|grados|celsius|caudal|aire|peligro|riesgo|peligroso|seguro|law|laws|decree|regulation|mining|mine|gas|methane|oxygen|hazard|emergency|threshold|technical|measure|measurement|measurements|reading|readings|calculate|calculation|airflow)/.test(text)
+    || /\d+(\.\d+)?\s*(%|ppm|c|m3|cfm)/i.test(s);
 };
 
 async function handler(req, res) {
