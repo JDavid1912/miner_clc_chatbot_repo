@@ -1,5 +1,9 @@
 {
   "outputDirectory": "web_dist",
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
   "functions": { "api/*.js": { "includeFiles": "knowledge/**", "maxDuration": 30 } },
   "headers": [{ "source": "/(.*)", "headers": [{ "key": "X-Content-Type-Options", "value": "nosniff" }] }]
 }
+
