@@ -1,0 +1,14 @@
+{
+  "name": "miner-clc-chatbot-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend RAG + LLM del asistente de MINER CLC (funciones serverless para Vercel)",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node test/chatbot_rag_test.js",
+    "start": "node server/dev.js",
+    "dev": "powershell -ExecutionPolicy Bypass -File ./run_app.ps1"
+  }
+}

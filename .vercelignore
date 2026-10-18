@@ -1,0 +1,11 @@
+android
+ios
+linux
+macos
+windows
+lib
+backups
+.dart_tool
+build
+test/*.dart
+*.session*
