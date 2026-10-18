@@ -33,8 +33,21 @@ const isThanksEn = (q) => /^(thank you|thanks|thank you very much|perfect thanks
 
 const looksEnglish = (s) => {
   const words = norm(s).split(/\s+/);
-  const enWords = new Set(['hello', 'hi', 'what', 'how', 'where', 'when', 'who', 'why', 'can', 'could', 'is', 'are', 'the', 'limits', 'gas', 'mine', 'project', 'university', 'system', 'ventilation']);
-  return words.some((w) => enWords.has(w));
+  const enWords = new Set([
+    'hello', 'hi', 'hey', 'what', 'how', 'where', 'when', 'who', 'why', 'can', 'could', 'is', 'are', 'the',
+    'limits', 'gas', 'mine', 'mining', 'project', 'university', 'system', 'ventilation', 'law', 'laws',
+    'regulation', 'regulations', 'standard', 'standards', 'safety', 'worker', 'workers', 'tell', 'explain',
+    'about', 'please', 'with', 'from', 'does', 'do', 'which', 'threshold', 'thresholds', 'hazard', 'hazard',
+    'alarm', 'emergency', 'sensors', 'underground', 'engineering', 'technical', 'rules', 'colombia', 'decree'
+  ]);
+  const count = words.filter((w) => enWords.has(w)).length;
+  return count >= 1;
+};
+
+// Detecta si la consulta trata sobre temas afines a minería, ingeniería, normatividad, leyes o técnica
+const isDomainRelevant = (s) => {
+  const text = norm(s);
+  return /(ley|leyes|decreto|norma|normativa|estandar|codigo|reglamento|articulo|resolucion|sg sst|mineria|minero|mina|minas|subterranea|gas|gases|metano|oxigeno|monoxido|carbono|sulfhidrico|ch4|co2|h2s|co|o2|ventilacion|ventilador|flujo|ingenieria|tecnico|tecnica|seguridad|evacuacion|sensor|alarma|sensorica|sutatausa|miner|transhumana|udec|cundinamarca|law|laws|decree|regulation|mining|mine|gas|methane|oxygen|hazard|emergency|threshold|technical)/.test(text);
 };
 
 async function handler(req, res) {
@@ -64,7 +77,7 @@ async function handler(req, res) {
   const lastUser = [...history].reverse().find((h) => h.role === 'user');
   const chunks = retrieve(`${message} ${lastUser ? lastUser.text : ''}`, 4);
   const top = retrieve(message, 1)[0];
-  const relevant = (top && top.score >= MIN_SCORE) || (lastUser && chunks[0] && chunks[0].score >= MIN_SCORE * 1.5) || chunks.length > 0;
+  const relevant = (top && top.score >= MIN_SCORE) || (lastUser && chunks[0] && chunks[0].score >= MIN_SCORE * 1.5) || chunks.length > 0 || isDomainRelevant(message);
   if (!relevant) {
     const isEn = looksEnglish(message);
     return res.status(200).json({ answer: isEn ? OUT_OF_SCOPE_EN : OUT_OF_SCOPE, sources: [], mode: 'out_of_scope' });
